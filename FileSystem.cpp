@@ -39,7 +39,11 @@ void FileSystem::createFolder() {
   while (n == " " || n.length() == 0) {
     getline(cin, n);
   }
-  currentFolder->addSubfolder(n);
+  if (currentFolder->folderExists(n)) {
+    currentFolder->addSubfolder(n);
+  } else {
+    cout << "A folder with the same name already exists in this folder\n";
+  }
 }
 
 void FileSystem::deleteFolder() {}
