@@ -45,6 +45,7 @@ public:
   void displayTree(int level);
   File *searchFile(string fileName);
   bool folderExists(string folderName);
+  bool fileExists(File f);
   ~Folder();
 };
 #endif

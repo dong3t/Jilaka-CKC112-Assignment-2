@@ -112,6 +112,15 @@ bool Folder::folderExists(string folderName) {
   }
   return false;
 }
+
+bool Folder::fileExists(File f) {
+  for (int i = 0; i < files.size(); i++) {
+    if (files[i].getFullFileName() == f.getFullFileName()) {
+      return true;
+    }
+  }
+  return false;
+}
 // Student 1: recursive cleanup.
 // When one folder is deleted, all its child folders are deleted too.
 Folder::~Folder() {

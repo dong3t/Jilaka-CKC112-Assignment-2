@@ -7,7 +7,6 @@ FileSystem::FileSystem() : root("Root"), getroot(root.getName()) {
   currentFolder = &root;
 }
 
-
 void FileSystem::createFile() {
 
   cout << "Enter the name of the file: ";
@@ -26,6 +25,7 @@ void FileSystem::createFile() {
   }
 
   File temp(n, e);
+
   currentFolder->addFile(temp);
   cout << "File created inside " << currentFolder->getName() << ".\n";
 }
@@ -79,7 +79,6 @@ void FileSystem::goBack() {
   }
 }
 void FileSystem::showCurrentPath() {}
-
 
 void FileSystem::loadFileSystem() {
   ifstream sampleFiles("filesystem.txt");
@@ -167,8 +166,6 @@ void FileSystem::loadFileSystem() {
   }
   cout << "File system loaded successfully!\n";
 }
-
-
 
 void FileSystem::mainMenu() {
   int option;
