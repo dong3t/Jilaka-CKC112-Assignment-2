@@ -7,6 +7,128 @@ FileSystem::FileSystem() : root("Root"), getroot(root.getName()) {
   currentFolder = &root;
 }
 
+void FileSystem::createFile() {
+
+  cout << "Enter the name of the file: ";
+  string n, e;
+  while (n == " " || n.length() == 0) {
+    getline(cin, n);
+  }
+  cout << "Enter the file extension (example: txt, docx, etc.): ";
+  while (e == " " || e.length() == 0) {
+    cin >> e;
+  }
+
+  // Remove the leading dot if the user typed it (e.g. ".txt" -> "txt")
+  if (e.length() > 0 && e[0] == '.') {
+    e = e.substr(1);
+  }
+
+  File temp(n, e);
+  if (currentFolder->fileExists(temp) == false) {
+    currentFolder->addFile(temp);
+    cout << "File created inside " << currentFolder->getName() << ".\n";
+  } else {
+    cout << "Sorry, a file with the same name and extension already exists.\n";
+  }
+}
+
+void FileSystem::createFolder() {
+  cout << "Enter the name of the folder: ";
+  string n;
+  while (n == " " || n.length() == 0) {
+    getline(cin, n);
+  }
+  if (!currentFolder->folderExists(n)) {
+    currentFolder->addSubfolder(n);
+  } else {
+    cout << "A folder with the same name already exists in this folder\n";
+  }
+}
+
+void FileSystem::deleteFile() {
+  string fileName;
+
+  cout << "Enter the full file name to delete (example: easy.txt): ";
+  cin >> fileName;
+
+  try {
+    root.deleteFile(fileName);
+  } catch (const char *msg) {
+    cout << msg << endl;
+  }
+}
+
+void FileSystem::deleteFolder() {
+  string folderName;
+
+  cout << "Enter folder name to delete: ";
+  cin >> folderName;
+
+  try {
+    Folder *temp = currentFolder;
+    bool resetCurrent = false;
+    while (temp != &root && temp != nullptr) {
+      if (temp->getName() == folderName) {
+        resetCurrent = true;
+        break;
+      }
+      temp = temp->getParent();
+    }
+
+    root.deleteFolder(folderName);
+
+    if (resetCurrent) {
+      currentFolder = &root;
+      cout << "Notice: You were inside the deleted folder. Returned to Root.\n";
+    }
+  } catch (const char *msg) {
+    cout << msg << endl;
+  }
+}
+
+void FileSystem::enterFolder() {
+  string folderName;
+  cout << "Enter folder name to enter: ";
+  while (folderName == " " || folderName.length() == 0) {
+    getline(cin, folderName);
+  }
+
+  try {
+    if (!currentFolder->folderExists(folderName))
+      throw runtime_error("Error: '" + folderName + "' not found.");
+
+    Folder *target = nullptr;
+    for (Folder *sub : currentFolder->getSubfolders()) {
+      if (sub->getName() == folderName) {
+        target = sub;
+        break;
+      }
+    }
+    currentFolder = target;
+    cout << "Entered folder: " << currentFolder->getName() << endl;
+
+  } catch (runtime_error e) {
+    cout << e.what() << endl;
+  }
+}
+
+void FileSystem::goBack() {
+  try {
+    if (currentFolder == &root)
+      throw runtime_error("Error: Already at Root. Cannot go back further.");
+
+    currentFolder = currentFolder->getParent();
+    cout << "Moved back to: " << currentFolder->getName() << endl;
+
+  } catch (runtime_error e) {
+    cout << e.what() << endl;
+  }
+}
+void FileSystem::showCurrentPath() {
+  cout << "Current path: " << currentFolder->getPath() << endl;
+}
+
 void FileSystem::loadFileSystem() {
   ifstream sampleFiles("filesystem.txt");
   if (!sampleFiles) {
@@ -94,98 +216,6 @@ void FileSystem::loadFileSystem() {
   cout << "File system loaded successfully!\n";
 }
 
-void FileSystem::createFile() {
-
-  cout << "Enter the name of the file: ";
-  string n, e;
-  while (n == " " || n.length() == 0) {
-    getline(cin, n);
-  }
-  cout << "Enter the file extension (example: txt, docx, etc.): ";
-  while (e == " " || e.length() == 0) {
-    cin >> e;
-  }
-
-  // Remove the leading dot if the user typed it (e.g. ".txt" -> "txt")
-  if (e.length() > 0 && e[0] == '.') {
-    e = e.substr(1);
-  }
-
-  File temp(n, e);
-  currentFolder->addFile(temp);
-  cout << "File created inside " << currentFolder->getName() << ".\n";
-}
-
-void FileSystem::createFolder() {
-  cout << "Enter the name of the folder: ";
-  string n;
-  while (n == " " || n.length() == 0) {
-    getline(cin, n);
-  }
-  currentFolder->addSubfolder(n);
-}
-
-void FileSystem::searchFolder() {
-  string folderName;
-  cout << "Enter folder name to enter: ";
-  cin >> folderName;
-  try {
-    if (folderName.empty())
-      throw runtime_error("Error: Folder name cannot be empty.");
-    if (!currentFolder->folderExists(folderName))
-      throw runtime_error("Error: '" + folderName + "' not found.");
-
-    Folder *target = nullptr;
-    for (Folder *sub : currentFolder->getSubfolders()) {
-      if (sub->getName() == folderName) {
-        target = sub;
-        break;
-      }
-    }
-    currentFolder = target;
-    cout << "Entered folder: " << currentFolder->getName() << endl;
-
-  } catch (runtime_error e) {
-    cout << e.what() << endl;
-  }
-}
-
-void FileSystem::deleteFile()
-{
-    string fileName;
-
-    cout << "Enter file name to delete: ";
-    cin >> fileName;
-
-    try
-    {
-        root.deleteFile(fileName);
-    }
-    catch (string msg)
-    {
-        cout << msg << endl;
-    }
-}
-
-void FileSystem::deleteFolder()
-{
-    string folderName;
-
-    cout << "Enter folder name to delete: ";
-    cin >> folderName;
-
-    try
-    {
-        root.deleteFolder(folderName);
-    }
-    catch (const char* msg)
-    {
-        cout << msg << endl;
-    }
-}
-
-void FileSystem::showCurrentPath() {}
-
 void FileSystem::mainMenu() {
   int option;
   do {
@@ -217,7 +247,7 @@ void FileSystem::mainMenu() {
       break;
     case 5: {
       string n;
-      cout << "Enter the file name to search: ";
+      cout << "Enter the full file name to search (example: easy.txt): ";
       cin >> n;
       File *foundFile = root.searchFile(n);
       if (foundFile != nullptr) {
@@ -228,10 +258,10 @@ void FileSystem::mainMenu() {
       break;
     }
     case 6:
-      searchFolder();
+      enterFolder();
       break;
     case 7:
-      // go back stub
+      goBack();
       break;
     case 8:
       deleteFile();

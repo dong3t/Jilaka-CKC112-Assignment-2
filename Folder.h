@@ -39,6 +39,9 @@ public:
   void addFile(File temp);
   Folder *addSubfolder(string n);
   void addSubfolder(Folder *newFolder);
+  void deleteFile(string);
+  void deleteFolder(string);
+  string getPath();
   void printFiles();
   void printFolders();
   void displayCurrentFolder();
@@ -47,6 +50,7 @@ public:
   void deleteFile(string fileName);
   void deleteFolder(string folderName);
   bool folderExists(string folderName);
+  bool fileExists(File f);
   ~Folder();
 };
 #endif

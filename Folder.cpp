@@ -51,9 +51,13 @@ void Folder::displayCurrentFolder() {
   printFolders();
 }
 
-// Student 1: recursive full tree display.
-// level controls the indentation.
-// Root starts at level 0, its children are level 1, and so on.
+string Folder::getPath() {
+  if (parent == nullptr) {
+    return name;
+  }
+  return parent->getPath() + "/" + name;
+}
+
 void Folder::displayTree(int level) {
   for (int i = 0; i < level; i++) {
     cout << "    ";
@@ -86,8 +90,7 @@ void Folder::displayTree(int level) {
 File *Folder::searchFile(string fileName) {
   // First search files directly inside this folder.
   for (int i = 0; i < files.size(); i++) {
-    if (files[i].getFullFileName() == fileName ||
-        files[i].getName() == fileName) {
+    if (files[i].getFullFileName() == fileName) {
       return &files[i];
     }
   }
@@ -114,65 +117,62 @@ bool Folder::folderExists(string folderName) {
   return false;
 }
 
-void Folder::deleteFile(string fileName){
-    for (int i = 0; i < files.size(); i++)
-    {
-        if (files[i].getFullFileName() == fileName ||
-            files[i].getName() == fileName)
-        {
-            files.erase(files.begin() + i);
-            cout << "File deleted successfully.\n";
-            return;
-        }
+bool Folder::fileExists(File f) {
+  for (int i = 0; i < files.size(); i++) {
+    if (files[i].getFullFileName() == f.getFullFileName()) {
+      return true;
     }
-
-    for (int i = 0; i < subfolders.size(); i++)
-    {
-        try
-        {
-            subfolders[i]->deleteFile(fileName);
-            return;
-        }
-        catch (string)
-        {
-        }
-    }
-    throw string("Error: File '") + fileName + "' not found.";
+  }
+  return false;
 }
 
-void Folder::deleteFolder(string folderName)
-{
-    // Search immediate subfolders
-    for (int i = 0; i < subfolders.size(); i++)
-    {
-        if (subfolders[i]->getName() == folderName)
-        {
-            delete subfolders[i];                  // invokes destructor
-            subfolders.erase(subfolders.begin() + i);
-
-            cout << "Folder deleted successfully.\n";
-            return;
-        }
+void Folder::deleteFile(string fileName) {
+  // Search files in the current folder
+  for (int i = 0; i < files.size(); i++) {
+    if (files[i].getFullFileName() == fileName) {
+      files.erase(files.begin() + i);
+      cout << "File deleted successfully.\n";
+      return;
     }
-
-    // Search recursively inside subfolders
-    for (int i = 0; i < subfolders.size(); i++)
-    {
-        try
-        {
-            subfolders[i]->deleteFolder(folderName);
-            return;        // folder found and deleted
-        }
-        catch (const char*)
-        {
-            // continue searching
-        }
+  }
+  // Search recursively in subfolders
+  for (int i = 0; i < subfolders.size(); i++) {
+    try {
+      subfolders[i]->deleteFile(fileName);
+      return; // file found and deleted
+    } catch (const char *) {
+      // Continue searching remaining subfolders
     }
-
-    throw "Error: Folder not found.";
+  }
+  // File not found anywhere
+  throw "Error: File not found.";
 }
-// Student 1: recursive cleanup.
-// When one folder is deleted, all its child folders are deleted too.
+
+void Folder::deleteFolder(string folderName) {
+  // Search immediate subfolders
+  for (int i = 0; i < subfolders.size(); i++) {
+    if (subfolders[i]->getName() == folderName) {
+      delete subfolders[i]; // invokes destructor
+      subfolders.erase(subfolders.begin() + i);
+
+      cout << "Folder deleted successfully.\n";
+      return;
+    }
+  }
+
+  // Search recursively inside subfolders
+  for (int i = 0; i < subfolders.size(); i++) {
+    try {
+      subfolders[i]->deleteFolder(folderName);
+      return; // folder found and deleted
+    } catch (const char *) {
+      // continue searching
+    }
+  }
+
+  throw "Error: Folder not found.";
+}
+
 Folder::~Folder() {
   for (int i = 0; i < subfolders.size(); i++) {
     delete subfolders[i];
