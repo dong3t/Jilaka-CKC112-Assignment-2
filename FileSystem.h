@@ -22,6 +22,7 @@ public:
   void createFolder();
   void deleteFolder();
   void searchFolder();
+  void goBack();
   void showCurrentPath();
   void loadFileSystem();
   void mainMenu();
