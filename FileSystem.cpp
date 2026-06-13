@@ -7,64 +7,6 @@ FileSystem::FileSystem() : root("Root"), getroot(root.getName()) {
   currentFolder = &root;
 }
 
-void FileSystem::createFile() {
-
-  cout << "Enter the name of the file: ";
-  string n, e;
-  while (n == " " || n.length() == 0) {
-    getline(cin, n);
-  }
-  cout << "Enter the file extension (example: txt, docx, etc.): ";
-  while (e == " " || e.length() == 0) {
-    cin >> e;
-  }
-
-  // Remove the leading dot if the user typed it (e.g. ".txt" -> "txt")
-  if (e.length() > 0 && e[0] == '.') {
-    e = e.substr(1);
-  }
-
-  File temp(n, e);
-  currentFolder->addFile(temp);
-  cout << "File created inside " << currentFolder->getName() << ".\n";
-}
-
-void FileSystem::createFolder() {
-  cout << "Enter the name of the folder: ";
-  string n;
-  while (n == " " || n.length() == 0) {
-    getline(cin, n);
-  }
-  currentFolder->addSubfolder(n);
-}
-
-
-void FileSystem::searchFolder() {
-  string folderName;
-  cout << "Enter folder name to enter: ";
-  cin >> folderName;
-  try {
-    if (folderName.empty())
-      throw runtime_error("Error: Folder name cannot be empty.");
-    if (!currentFolder->folderExists(folderName))
-      throw runtime_error("Error: '" + folderName + "' not found.");
-
-    Folder *target = nullptr;
-    for (Folder *sub : currentFolder->getSubfolders()) {
-      if (sub->getName() == folderName) {
-        target = sub;
-        break;
-      }
-    }
-    currentFolder = target;
-    cout << "Entered folder: " << currentFolder->getName() << endl;
-
-  } catch (runtime_error e) {
-    cout << e.what() << endl;
-  }
-}
-void FileSystem::showCurrentPath() {}
-
 void FileSystem::loadFileSystem() {
   ifstream sampleFiles("filesystem.txt");
   if (!sampleFiles) {
@@ -151,6 +93,63 @@ void FileSystem::loadFileSystem() {
   }
   cout << "File system loaded successfully!\n";
 }
+
+void FileSystem::createFile() {
+
+  cout << "Enter the name of the file: ";
+  string n, e;
+  while (n == " " || n.length() == 0) {
+    getline(cin, n);
+  }
+  cout << "Enter the file extension (example: txt, docx, etc.): ";
+  while (e == " " || e.length() == 0) {
+    cin >> e;
+  }
+
+  // Remove the leading dot if the user typed it (e.g. ".txt" -> "txt")
+  if (e.length() > 0 && e[0] == '.') {
+    e = e.substr(1);
+  }
+
+  File temp(n, e);
+  currentFolder->addFile(temp);
+  cout << "File created inside " << currentFolder->getName() << ".\n";
+}
+
+void FileSystem::createFolder() {
+  cout << "Enter the name of the folder: ";
+  string n;
+  while (n == " " || n.length() == 0) {
+    getline(cin, n);
+  }
+  currentFolder->addSubfolder(n);
+}
+
+void FileSystem::searchFolder() {
+  string folderName;
+  cout << "Enter folder name to enter: ";
+  cin >> folderName;
+  try {
+    if (folderName.empty())
+      throw runtime_error("Error: Folder name cannot be empty.");
+    if (!currentFolder->folderExists(folderName))
+      throw runtime_error("Error: '" + folderName + "' not found.");
+
+    Folder *target = nullptr;
+    for (Folder *sub : currentFolder->getSubfolders()) {
+      if (sub->getName() == folderName) {
+        target = sub;
+        break;
+      }
+    }
+    currentFolder = target;
+    cout << "Entered folder: " << currentFolder->getName() << endl;
+
+  } catch (runtime_error e) {
+    cout << e.what() << endl;
+  }
+}
+void FileSystem::showCurrentPath() {}
 
 void FileSystem::deleteFolder() {}
 void FileSystem::deleteFile() {}
