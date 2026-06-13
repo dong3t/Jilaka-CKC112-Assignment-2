@@ -25,9 +25,12 @@ void FileSystem::createFile() {
   }
 
   File temp(n, e);
-
-  currentFolder->addFile(temp);
-  cout << "File created inside " << currentFolder->getName() << ".\n";
+  if (root.fileExists(temp) == false) {
+    currentFolder->addFile(temp);
+    cout << "File created inside " << currentFolder->getName() << ".\n";
+  } else {
+    cout << "Sorry, a file with the same name and extension already exists.\n";
+  }
 }
 
 void FileSystem::createFolder() {
