@@ -44,6 +44,8 @@ public:
   void displayCurrentFolder();
   void displayTree(int level);
   File *searchFile(string fileName);
+  void deleteFile(string fileName);
+  void deleteFolder(string folderName);
   bool folderExists(string folderName);
   ~Folder();
 };

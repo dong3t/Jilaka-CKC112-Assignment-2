@@ -149,10 +149,42 @@ void FileSystem::searchFolder() {
     cout << e.what() << endl;
   }
 }
-void FileSystem::showCurrentPath() {}
 
-void FileSystem::deleteFolder() {}
-void FileSystem::deleteFile() {}
+void FileSystem::deleteFile()
+{
+    string fileName;
+
+    cout << "Enter file name to delete: ";
+    cin >> fileName;
+
+    try
+    {
+        root.deleteFile(fileName);
+    }
+    catch (string msg)
+    {
+        cout << msg << endl;
+    }
+}
+
+void FileSystem::deleteFolder()
+{
+    string folderName;
+
+    cout << "Enter folder name to delete: ";
+    cin >> folderName;
+
+    try
+    {
+        root.deleteFolder(folderName);
+    }
+    catch (const char* msg)
+    {
+        cout << msg << endl;
+    }
+}
+
+void FileSystem::showCurrentPath() {}
 
 void FileSystem::mainMenu() {
   int option;
